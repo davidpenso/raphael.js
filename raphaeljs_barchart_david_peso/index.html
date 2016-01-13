@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+    <title>David Peso Raphael Test</title>
+    <script src="raphael.js"></script>
+    <script src="g.raphael.js"></script>
+    <script src="g.bar.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="my.css">
+    <script type="text/javascript">
+        
+        function getData(){
+            var l= document.getElementById("labels").value.split(",");
+            var v= document.getElementById("values").value.split(",");
+            var parent= document.body;
+            var child= document.getElementById("holder");
+            parent.removeChild(child);
+            drawChart(l, v);
+        }
+        
+        function loadGraphJSON() {
+            var data = [10,14,10,10,10,2,3];
+            var labels = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
+            var lv="";
+            for(var i=0;i<labels.length;i++){
+                var last=labels.length-1;
+                if(i!=last){
+                    lv=lv+labels[i]+",";
+                }
+                else{
+                    lv=lv+labels[i];
+                }
+
+            }
+            var l= document.getElementById("labels").value=lv;
+            var v= document.getElementById("values").value=JSON.stringify(data).replace("[","").replace("]","");
+            drawChart(labels, data);
+        }
+        
+        function drawChart(labels, data) {
+            var para = document.createElement("div");
+            para.setAttribute("id", "holder");
+            document.body.appendChild(para);
+            
+            var r = Raphael("holder", 600, 300);
+            
+            var chart = r.g.barchart(10, 10, 580, 280, [data], {stacked: true, type: "soft"});
+            
+            chart.hover(function() {
+                // Create a popup element on top of the bar
+                this.flag = r.g.popup(this.bar.x, this.bar.y, (this.bar.value || "0")).insertBefore(this);
+            }, function() {
+                // hide the popup element with an animation and remove the popup element at the end
+                this.flag.animate({opacity: 0}, 300, function () {this.remove();});
+            });
+            
+            r.g.txtattr = {font:"12px Fontin-Sans, Arial, sans-serif", fill:"#000", "font-weight": "bold"};
+    
+            chart.label(labels);
+            
+            for (var i = 0; i < chart.bars[0].length; i++) {
+                var bar = chart.bars[0][i];
+                if (bar.value >= 15) {
+                    bar.attr("fill", "#bf2f2f");
+                    bar.attr("stroke", "#bf2f2f");
+                }
+            }
+        }
+        
+        window.onload = function() {
+            loadGraphJSON();
+        }   
+    </script>
+</head>
+<body>
+
+   <div ng-app="">
+        <p>Name of the chart: <input type="text" ng-model="name" placeholder="Chart"></p>
+        <form onsubmit="getData()">
+        <h5>Please enter labels and values comma seperated</h5>
+        <p>Labels: <input type="text" placeholder="Labels" class="labels" id="labels"></p>
+        <p>Values: <input type="text" placeholder="Values" class="values" id="values"></p>
+        <input type="submit">
+        </form>
+
+        <h1 ng-bind="name"></h1>
+    </div>
+
+    <div id="holder"></div>
+
+</body>
+</html>
