@@ -13,9 +13,9 @@
         function getData(){
             var l= document.getElementById("labels").value.split(",");
             var v= document.getElementById("values").value.split(",");
-            var parent= document.body;
-            var child= document.getElementById("holder");
-            parent.removeChild(child);
+            //var parent= document.body;
+            //var child= document.getElementById("holder");
+            //parent.removeChild(child);
             drawChart(l, v);
         }
         
@@ -39,33 +39,21 @@
         }
         
         function drawChart(labels, data) {
-            var para = document.createElement("div");
-            para.setAttribute("id", "holder");
-            document.body.appendChild(para);
+        
+            var paper = Raphael(80, 350, 800, 200);
+
+            var xPos=5;
+             data.forEach(function(elem){
+                        var pos=elem*5;
+                        paper.rect(xPos,20,30,pos).attr({fill:'#ff0000'});
+                        xPos+=100;
+             });
+             var xPos2=30;
+             labels.forEach(function(elem){
+                    paper.text(xPos2, 10, elem).attr({fill: '#000000',"font-size": 16, "font-family": "Arial, Helvetica, sans-serif"});
+                    xPos2+=100;
+             });
             
-            var r = Raphael("holder", 600, 300);
-            
-            var chart = r.g.barchart(10, 10, 580, 280, [data], {stacked: true, type: "soft"});
-            
-            chart.hover(function() {
-                // Create a popup element on top of the bar
-                this.flag = r.g.popup(this.bar.x, this.bar.y, (this.bar.value || "0")).insertBefore(this);
-            }, function() {
-                // hide the popup element with an animation and remove the popup element at the end
-                this.flag.animate({opacity: 0}, 300, function () {this.remove();});
-            });
-            
-            r.g.txtattr = {font:"12px Fontin-Sans, Arial, sans-serif", fill:"#000", "font-weight": "bold"};
-    
-            chart.label(labels);
-            
-            for (var i = 0; i < chart.bars[0].length; i++) {
-                var bar = chart.bars[0][i];
-                if (bar.value >= 15) {
-                    bar.attr("fill", "#bf2f2f");
-                    bar.attr("stroke", "#bf2f2f");
-                }
-            }
         }
         
         window.onload = function() {
